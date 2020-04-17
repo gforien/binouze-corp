@@ -1,11 +1,10 @@
-# template-project :computer::satellite::video_game::globe_with_meridians::package::zap:
+# binouze-corp :beer::package::zap:
 
-![](https://img.shields.io/badge/badge-content-blue)
-[![](https://travis-ci.org/gforien/template-repo.svg?branch=master)](https://travis-ci.org/gforien/template-repo)
-![](https://img.shields.io/github/license/gforien/template-repository)
+<!-- [![](https://travis-ci.org/gforien/template-repo.svg?branch=master)](https://travis-ci.org/gforien/template-repo) -->
+![](https://img.shields.io/github/license/gforien/binouze-corp)
 
 
-#### Here is a simple description of what it does
+<!-- #### Here is a simple description of what it does -->
 
 <!--- Here are technologies used
 <p style = text-align:center;>
@@ -27,14 +26,8 @@ $ npm start
 ```
 
 ## Features :sparkles:
-- feature 1
-- feature 2
-- feature 3
-
-## Sources :books:
-This project is sampled from :
-- [Link 1](https://wikipedia.com)
-- [Link 2](https://github.com)
+- set the outflow you'd like for any beer
+- add new beers at any time
 
 ##
 #### [Gabriel FORIEN](https://github.com/gforien)
