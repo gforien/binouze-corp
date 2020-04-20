@@ -15,6 +15,7 @@ module.exports = {
         })
         .catch(err => {
           console.error('\x1b[31mDB ERROR >> ' + query + '\x1b[0m');
+          console.error(err);
           reject(err);
         });
     });
@@ -22,55 +23,123 @@ module.exports = {
 
   selectAll: function (db, table) {
     return new Promise( (resolve, reject) => {
+
       if (db && table ) {
         let query = 'SELECT * FROM "' + table + '";';
-        resolve(run(db, query));
+        resolve(this.run(db, query));
       }
 
       else reject();
     });
   },
 
-  selectAllWhere: function (db, table, criteria) {
+  selectAllWhere: function (db, table, id) {
     return new Promise((resolve, reject) => {
-      if (db && table && criteria) {
-        let query = 'SELECT * FROM "' + table + '" WHERE ' + criteria + ';';
-        resolve(run(db, query));
+
+      if (db && table && id) {
+
+        let query =
+          'SELECT * ' +
+          'FROM "' + table + '"' +
+          ' WHERE "id" = \'' + id + '\'';
+
+        resolve(this.run(db, query));
       }
 
       else reject();
     });
   },
 
-  insertInto: function (db, table, values, callback) {
-    if (table && values) {
-      // PostgreSQL expect identifiers in "double quotes" and strings in 'single quotes'
-      // table is the name of the table = identifier
-      // values = strings
-      let query =
-        'INSERT INTO "' + table + '" VALUES (\'' + values.join("','") + "');";
-      run(db, query)
-        .then(res => callback(res))
-        .catch(err => console.error(err));
-    }
+  insertInto: function (db, table, insert) {
+    return new Promise((resolve, reject) => {
+
+      if (db && table && insert) {
+
+        keys = Object.keys(insert);
+
+        // PostgreSQL expect identifiers (keys) in "double quotes" and strings (values) in 'single quotes'
+        keysEscaped = keys.map(key => '"' + key+ '"');
+        
+        valuesEscaped = keys.map(key => {
+          value = insert[key];
+
+          if (typeof value == 'number') {
+            return value;
+          }
+          else {
+            return '\'' + value + '\'';
+          }
+        });
+
+        let query =
+          'INSERT INTO "' + table + '"' +
+          ' (' + keysEscaped.join(',') + ')' +
+          ' VALUES (' + valuesEscaped.join(',') + ');';
+
+        resolve(this.run(db, query));
+      }
+
+      else reject();
+    });
   },
 
-  update: function (db, table, primary_key, update, callback) {
-    if (table && primary_key && update) {
-      dbToPrimary = { track: 'track_uri', mp3: 'mp3_file' };
+  update: function (db, table, id, update) {
+    return new Promise((resolve, reject) => {
 
-      let query =
-        'UPDATE ' + table +
-        ' SET ' + update +
-        ' WHERE ' + dbToPrimary[table] + "='" + primary_key + "'";
+      if (db && table && id && update) {
 
-      run(db, query)
-        .then(res => callback(res))
-        .catch(err => console.error(err));
-    }
+        // if the UPDATE is performed on an empty record, it should raise an error
+        this
+          .selectAllWhere(db, table, id)
+          .then(data => {
+            if (data.length == 1) {
+              updateKey = Object.keys(update)[0];
+
+              let query =
+                'UPDATE "' + table + '"' +
+                ' SET ' + updateKey + '= \'' + update[updateKey] + '\'' +
+                ' WHERE "id" = \'' + id + '\'';
+
+              resolve(this.run(db, query));
+            }
+
+            else reject("Record not found in database");
+          })
+          .catch(err => {
+            reject(err);
+          });
+      }
+
+      else reject();
+    });
   },
 
-  delete: function (argument) {
-    // body...
-  }
+  delete: function (db, table, id) {
+    return new Promise((resolve, reject) => {
+
+      if (db && table && id) {
+
+        // if the DELETE is performed on an empty record, it should raise an error
+        this
+          .selectAllWhere(db, table, id)
+          .then(data => {
+            if (data.length == 1) {
+              let query =
+                'DELETE FROM "' + table + '"' +
+                ' WHERE "id" = \'' + id + '\'';
+
+              resolve(this.run(db, query));
+            }
+            
+            else reject("Record not found in database");
+          })
+
+          .catch(err => {
+            reject(err);
+          });
+      }
+
+      else reject();
+    });
+  },
 };

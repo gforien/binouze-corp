@@ -1,3 +1,7 @@
+.App h1 {
+  padding-left: 40px;
+}
+
 .App ul > li {
   display: inline-block;
   outline: 1px solid #000000;
