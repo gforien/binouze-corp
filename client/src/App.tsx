@@ -14,7 +14,7 @@ interface AppState {
  *
  * It renders a list of Beers elements + the special newBeer element which allows to insert a new entry into the database
  * All Beers are stored in an array, in the App state.
- * Upon refresh(), the App GETs all beers from the API, updates its state, and renders them.
+ * Upon updateListOfBeers(), the App GETs all beers from the API, updates its state, and renders them.
  *
  * @props   none
  * @state   beers: []   the array of Beer elements (i.e. {id, ouflow} elements)
@@ -30,21 +30,23 @@ class App extends React.Component<AppProps, AppState> {
    * componentDidMount
    */
   componentDidMount(): void {
-    this.refresh = this.refresh.bind(this);
-    this.refresh();
+    this.updateListOfBeers = this.updateListOfBeers.bind(this);
+    this.updateListOfBeers();
   }
 
   /**
-   * refresh
+   * updateListOfBeers
    * GETs all beers from the API and refreshes the App's state on success, also triggering render().
    * This method is passed as a callback to every <Beer /> so that they can trigger the App render() method.
    */
-  refresh(): void {
+  updateListOfBeers(): void {
     $.ajax({
       type: 'GET',
       url: '/api/beers',
       success: (data) => {
-        this.setState({ beers: data });
+        this.setState({
+          beers: data
+        });
       },
       error: (err) => {
         console.log(JSON.stringify(err));
@@ -64,8 +66,8 @@ class App extends React.Component<AppProps, AppState> {
         <li key={ele.id}>
           <Beer
             name={ele.id}
-            outflow={ele.outflow}
-            refreshCb={this.refresh}
+            initialOutflow={ele.outflow}
+            updateListOfBeers={this.updateListOfBeers}
             isNewBeer={false}
           />
         </li>
@@ -87,8 +89,8 @@ class App extends React.Component<AppProps, AppState> {
           <li key="newBeer">
             <Beer
               name="newBeer"
-              outflow={0}
-              refreshCb={this.refresh}
+              initialOutflow={0}
+              updateListOfBeers={this.updateListOfBeers}
               isNewBeer={true}
             />
           </li>

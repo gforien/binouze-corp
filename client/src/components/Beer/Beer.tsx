@@ -4,25 +4,28 @@ import $ from 'jquery';
 
 interface BeerProps {
   name: string;
-  outflow: number;
-  refreshCb: () => void;
+  initialOutflow: number;
+  updateListOfBeers: () => void;
   isNewBeer: boolean;
 }
 
-interface BeerState {}
+interface BeerState {
+  outflow: number;
+}
 
 /**
  * Beer
  *
- * @props   name      : string
- * @props   outflow   : number       floating-point positive number, first set to 0
- * @props   refreshCb : () => void   callback to refresh App's list of Beers
- * @props   isNewBeer : boolean      if true, this Beer lets the user submit a new name and add it to the database
+ * @props   name              : string
+ * @props   outflow           : number       floating-point positive number, first set to 0
+ * @props   updateListOfBeers : () => void   callback to refresh App's list of Beers
+ * @props   isNewBeer         : boolean      if true, this Beer lets the user submit a new name and add it to the database
  * @state   none
  */
 class Beer extends React.Component<BeerProps, BeerState> {
   constructor(props: BeerProps) {
     super(props);
+    this.state = { outflow: this.props.initialOutflow };
 
     this.handleIncrease = this.handleIncrease.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -39,7 +42,7 @@ class Beer extends React.Component<BeerProps, BeerState> {
   handleIncrease(increase: number): (event: any) => void {
     // we return a handler as an arrow function to keep 'this' lexically scoped
     let handler = (event: any) => {
-      let newOutflow = +this.props.outflow + increase;
+      let newOutflow = +this.state.outflow + increase;
       if (newOutflow < 0) newOutflow = 0;
       newOutflow = Math.round(newOutflow * 100) / 100;
 
@@ -65,7 +68,7 @@ class Beer extends React.Component<BeerProps, BeerState> {
 
   /**
    * updateBeerOutflow
-   * PUTs an async request to update this Beer's outflow in the database, then re-render the App
+   * PUTs an async request to update this Beer's outflow in the database, then updates the state
    *
    * @param  beerName
    * @param  newOutflow
@@ -79,7 +82,9 @@ class Beer extends React.Component<BeerProps, BeerState> {
         outflow: newOutflow,
       }),
       success: () => {
-        this.props.refreshCb();
+        this.setState({
+          outflow: newOutflow
+        });
       },
       error: (err) => {
         console.error(err);
@@ -103,7 +108,7 @@ class Beer extends React.Component<BeerProps, BeerState> {
         outflow: 0,
       }),
       success: () => {
-        this.props.refreshCb();
+        this.props.updateListOfBeers();
       },
       error: (err) => {
         console.error(err);
@@ -137,7 +142,7 @@ class Beer extends React.Component<BeerProps, BeerState> {
             id={this.props.name}
             onChange={this.handleChange}
             type="number"
-            value={this.props.outflow}
+            value={this.state.outflow}
           />
           <button id={this.props.name} onClick={this.handleIncrease(+0.5)}>
             +
