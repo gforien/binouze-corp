@@ -39,7 +39,7 @@ class App extends React.Component<AppProps, AppState> {
   refresh() {
     $.ajax({
       type: 'GET',
-      url: 'http://localhost:5000/api/beers',
+      url: '/api/beers',
       success: (data) => {
         this.setState({ beers: data });
       },
