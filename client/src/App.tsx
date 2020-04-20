@@ -26,7 +26,10 @@ class App extends React.Component<AppProps, AppState> {
     this.state = { beers: [] };
   }
 
-  componentDidMount() {
+  /**
+   * componentDidMount
+   */
+  componentDidMount(): void {
     this.refresh = this.refresh.bind(this);
     this.refresh();
   }
@@ -36,7 +39,7 @@ class App extends React.Component<AppProps, AppState> {
    * GETs all beers from the API and refreshes the App's state on success, also triggering render().
    * This method is passed as a callback to every <Beer /> so that they can trigger the App render() method.
    */
-  refresh() {
+  refresh(): void {
     $.ajax({
       type: 'GET',
       url: '/api/beers',
@@ -54,7 +57,7 @@ class App extends React.Component<AppProps, AppState> {
    *
    * @return a <div> containing a title, a list of Beers, and a special newBeer element
    */
-  render() {
+  render(): JSX.Element {
     // build up the list of Beers from the App state
     let listOfBeers = this.state.beers.map(
       (ele: { id: string; outflow: number }) => (
