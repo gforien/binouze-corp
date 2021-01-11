@@ -2,6 +2,3 @@ node_modules
 
 client/build
 client/node_modules
-
-run.sh
-dump.sql
